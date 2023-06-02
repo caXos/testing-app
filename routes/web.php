@@ -25,9 +25,34 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::group(['middleware' => 'auth:sanctum'], function() {
+    //------------------------------------------------------------------------------------------------------------------------------
+    //Dashboard
+    //------------------------------------------------------------------------------------------------------------------------------
+    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    //Tasks
+    //------------------------------------------------------------------------------------------------------------------------------
+    //Index
+    // Route::get('tasks', [FinancialRecordController::class, 'index'])->name('tasks');
+    // //Create
+    // Route::get('bookkeeping/add', [FinancialRecordController::class, 'create'])->name('bookkeeping.create');
+    // Route::post('bookkeeping/add', [FinancialRecordController::class, 'store'])->name('bookkeeping.store');
+    // //Edit
+    // Route::get('bookkeeping/edit/{id}', [FinancialRecordController::class, 'edit'])->name('bookkeeping.edit');
+    // Route::post('bookkeeping/edit/{id}', [FinancialRecordController::class, 'update'])->name('bookkeeping.update');
+    // //Deactivate
+    // Route::delete('bookkeeping/deactivate/{id}', [FinancialRecordController::class, 'deactivate'])->name('bookkeeping.deactivate');
+
+}); 
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

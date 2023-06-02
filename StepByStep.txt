@@ -1,0 +1,67 @@
+1. Clone project 
+2. Rename the file .env.example as .env
+3. Config Database settings
+Example: 
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=DEV_nwta
+DB_USERNAME=newswiretestinguser
+DB_PASSWORD=newswiretestingpswd
+
+4. Open in IDE (e.g.: VisualStudioCode)
+5. Open a terminal
+6. Run composer install To install dependencies
+7. Run npm install To install npm packages
+8. Run php artisan breeze:install vue to install Laravel Breeze Starter Kit, with Vue, Vite and Inertia files
+9. Run php artisan migrate To initialize the pgsql database
+10. Run npm install again to update with breeze, vite, vue and inertia files
+11. Run npm run dev or npm run build to build and to watch for changes replace build with dev
+12. Open a browser and go to http://localhost:8080 and register an account, on the dashboard page you can work on the task
+
+
+
+
+
+
+Notes:
+- For testing purposes, this project currently loads some libraries using CDN, which is unadvised to use in production.
+If you want, you can install these libraries using NPM, Yarn, or other:
+
+jQuery
+jQueryUI
+DataTables.net
+npm install --save jszip
+npm install --save pdfmake
+npm install --save datatables.net-jqui
+npm install --save datatables.net-buttons-jqui
+npm install --save datatables.net-datetime
+npm install --save datatables.net-responsive-jqui
+npm install --save datatables.net-select-jqui
+
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
+import DataTable from 'datatables.net-jqui';
+import 'datatables.net-buttons-jqui';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-buttons/js/buttons.print.mjs';
+import DateTime from 'datatables.net-datetime';
+import 'datatables.net-responsive-jqui';
+import 'datatables.net-select-jqui';
+
+require( 'jszip' );
+require( 'pdfmake' );
+require( 'datatables.net-jqui' );
+require( 'datatables.net-buttons-jqui' );
+require( 'datatables.net-buttons/js/buttons.colVis.js' );
+require( 'datatables.net-buttons/js/buttons.html5.js' );
+require( 'datatables.net-buttons/js/buttons.print.js' );
+require( 'datatables.net-datetime' );
+require( 'datatables.net-responsive-jqui' );
+require( 'datatables.net-select-jqui' );
+
+SweetAlert2
+npm install sweetalert2
+
+-
