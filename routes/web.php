@@ -3,8 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+
 use Inertia\Inertia;
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TaskController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,25 +36,23 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     //------------------------------------------------------------------------------------------------------------------------------
     //Dashboard
     //------------------------------------------------------------------------------------------------------------------------------
-    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     //------------------------------------------------------------------------------------------------------------------------------
     //Tasks
     //------------------------------------------------------------------------------------------------------------------------------
     //Index
-    // Route::get('tasks', [FinancialRecordController::class, 'index'])->name('tasks');
-    // //Create
-    // Route::get('bookkeeping/add', [FinancialRecordController::class, 'create'])->name('bookkeeping.create');
-    // Route::post('bookkeeping/add', [FinancialRecordController::class, 'store'])->name('bookkeeping.store');
-    // //Edit
-    // Route::get('bookkeeping/edit/{id}', [FinancialRecordController::class, 'edit'])->name('bookkeeping.edit');
-    // Route::post('bookkeeping/edit/{id}', [FinancialRecordController::class, 'update'])->name('bookkeeping.update');
-    // //Deactivate
-    // Route::delete('bookkeeping/deactivate/{id}', [FinancialRecordController::class, 'deactivate'])->name('bookkeeping.deactivate');
-
+    Route::get('tasks', [TaskController::class, 'index'])->name('tasks');
+    //Create
+    Route::get('tasks/add', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('tasks/add', [TaskController::class, 'store'])->name('tasks.store');
+    //Edit
+    Route::get('tasks/edit/{id}', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::post('tasks/edit/{id}', [TaskController::class, 'update'])->name('tasks.update');
+    //Deactivate
+    Route::delete('tasks/deactivate/{id}', [TaskController::class, 'deactivate'])->name('tasks.deactivate');
+    //Destroy
+    Route::delete('tasks/destroy/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 }); 
 
 Route::middleware('auth')->group(function () {
