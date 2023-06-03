@@ -69,7 +69,7 @@ class TaskPolicy
      */
     public function join(User $user, Task $task): bool
     {
-        return $user->role <= 5 ? true : false;
+        return $user->role <= 5 ? true : false; //Little joke: interns can enter a taskteam, but not leave, just for debugging reasons
     }
 
     /**

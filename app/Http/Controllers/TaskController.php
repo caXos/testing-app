@@ -18,7 +18,7 @@ class TaskController extends Controller
     public function index()
     {
         try {
-            $tasks = Task::where('active','=',true)->get();
+            $tasks = Task::where('active','=',true)->orderBy('id','asc')->get();
             if (count($tasks) > 0) {
                 foreach($tasks as $task) {
                     switch($task->status){
@@ -163,8 +163,24 @@ class TaskController extends Controller
     /**
      * Includes the user in the taskforce of a task
      */
-    public function join_team(Request $request, Task $task) {
-
+    public function join_team(Request $request, Task $task) 
+    {
+        $task = Task::find($request->id);
+        $this->authorize('join', $task);
+        try {
+            $workers = json_decode($task->workers);
+            $worker = new \stdClass();
+            $worker->id = (string) auth()->user()->id;
+            $worker->name = auth()->user()->name;
+            array_push($workers, $worker);
+            $task->workers = json_encode($workers);
+            if ($task->status != 2) $task->status = 2;
+            $task->save();
+            return redirect()->back()->with(['message'=>'Success']);
+        } catch (Exception $e) {
+            $errorMessage = "Contact an admin and inform error code: [TC-07] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
+        }
     }
 
     /**

@@ -135,20 +135,28 @@ function isInTeam(index) {
 }
 
 const joinTeam = (id) => {
-    let index = localAlerts.value.find((checkId) => {return checkId.id == id})
-    // taskForm.post(route('alerts.toggleSeen', [id]), {
-    //     onSuccess: () => {
-    //         localAlerts.value[index.id-1].seen = !localAlerts.value[index.id-1].seen
-    //     }
-    // })
+    let taskIndex = tasks.value.find( (checkId) => {return parseInt(checkId.id) == id} )
+    taskDform.post(route('tasks.join.team', [taskIndex.id]), {
+        preserveScroll: true,
+        onSuccess: (res) => {
+            console.log(res)
+            tasks.value[taskIndex.id-1].workers.push({
+                id: usePage().props.auth.user.id,
+                name: usePage().props.auth.user.name
+            })
+            tasks.value[taskIndex.id-1].statusString = "In progress"
+            tasks.value[taskIndex.id-1].status = 2
+        }
+    })
 }
 
-const leaveTeam = async (id) => {
+const leaveTeam = (id) => {
     let taskIndex = tasks.value.find( (checkId) => {return parseInt(checkId.id) == id} )
     let workerIndex = tasks.value[taskIndex.id-1].workers.findIndex( (checkId) => {return parseInt(checkId.id) == usePage().props.auth.user.id} )
     taskDform.post(route('tasks.leave.team', [taskIndex.id]), {
         preserveScroll: true,
         onSuccess: (res) => {
+            console.log(res)
             tasks.value[taskIndex.id-1].workers.splice(workerIndex,1) //taskIndex needs to be reduced by one because v-for uses 1 to length, instead of 0 to (length-1); workerIndex does not needs to be reduced
         }
     })
