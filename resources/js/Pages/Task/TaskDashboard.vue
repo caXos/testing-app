@@ -8,6 +8,7 @@ import EditIcon from '@/Components/EditIcon.vue';
 import InfoIcon from '@/Components/InfoIcon.vue';
 import LeaveTeamIcon from '@/Components/LeaveTeamIcon.vue';
 import FAB from '@/Components/FloatingActionButton.vue';
+import { useForm } from '@inertiajs/vue3';
 
 //Props
 const props = defineProps({
@@ -19,6 +20,10 @@ const tasks = ref(props.tasks)
 
 //Global variables used for jQuery DataTables
 let taskDatatable = null
+
+const taskDform = useForm({
+    
+});
 
 //Functions/methods
 onMounted(() => {
@@ -47,9 +52,9 @@ onMounted(() => {
             'colvis',
             'searchBuilder',
             {
-                text: 'Claim selected',
-                action: claim_selected,
-                name: 'claim_selected',
+                text: 'Join selected',
+                action: join_selected,
+                name: 'join_selected',
                 enabled: false
             },
             // {
@@ -61,12 +66,12 @@ onMounted(() => {
         ],
 	}).on('select', function () {
         if (taskDatatable.rows({selected: true}).count() > 0) {
-            taskDatatable.button('claim_selected:name').enable()
+            taskDatatable.button('join_selected:name').enable()
         //     taskDatatable.button('delete_selected:name').enable()
         };
     }).on('deselect', function () {
         if (taskDatatable.rows({selected: true}).count() < 1) {
-            taskDatatable.button('claim_selected:name').disable()
+            taskDatatable.button('join_selected:name').disable()
         //     taskDatatable.button('delete_selected:name').disable()
         };
     })
@@ -114,10 +119,38 @@ const more_information = (id) => {
     })
 }
 
-const claim_selected = () => {
+const join_selected = () => {
     Swal.fire({
         title: 'Update pending...',
         text: 'Currently this function is not ready. Wait for next updates!'
+    })
+}
+
+function isInTeam(index) {
+    let haystack = []
+    for (let i=0; i < tasks.value[index].workers.length; i++) {
+        haystack.push( parseInt(tasks.value[index].workers[i].id) )
+    }
+    return haystack.includes(usePage().props.auth.user.id)
+}
+
+const joinTeam = (id) => {
+    let index = localAlerts.value.find((checkId) => {return checkId.id == id})
+    // taskForm.post(route('alerts.toggleSeen', [id]), {
+    //     onSuccess: () => {
+    //         localAlerts.value[index.id-1].seen = !localAlerts.value[index.id-1].seen
+    //     }
+    // })
+}
+
+const leaveTeam = async (id) => {
+    let taskIndex = tasks.value.find( (checkId) => {return parseInt(checkId.id) == id} )
+    let workerIndex = tasks.value[taskIndex.id-1].workers.findIndex( (checkId) => {return parseInt(checkId.id) == usePage().props.auth.user.id} )
+    taskDform.post(route('tasks.leave.team', [taskIndex.id]), {
+        preserveScroll: true,
+        onSuccess: (res) => {
+            tasks.value[taskIndex.id-1].workers.splice(workerIndex,1) //taskIndex needs to be reduced by one because v-for uses 1 to length, instead of 0 to (length-1); workerIndex does not needs to be reduced
+        }
     })
 }
 </script>
@@ -155,7 +188,8 @@ const claim_selected = () => {
                                     <EditIcon title="Edit task"/>
                                 </Link>
                                 <InfoIcon title="More information" @click="more_information(index)"/>
-                                <HandRaisedIcon title="Claim task"/>
+                                <HandRaisedIcon title="Join taskforce" v-if="!(isInTeam(index))" @click="joinTeam(task.id)"/>
+                                <LeaveTeamIcon title="Leave team" v-else @click="leaveTeam(task.id)"/>
                             </div>
                         </th>
                     </tr>

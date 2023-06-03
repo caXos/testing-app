@@ -53,6 +53,11 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::delete('tasks/deactivate/{id}', [TaskController::class, 'deactivate'])->name('tasks.deactivate');
     //Destroy
     Route::delete('tasks/destroy/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+
+    //Join Team
+    Route::post('tasks/join/{id}', [TaskController::class, 'join_team'])->name('tasks.join.team');
+    //Leave Team 
+    Route::post('tasks/leave/{id}', [TaskController::class, 'leave_team'])->name('tasks.leave.team');
 }); 
 
 Route::middleware('auth')->group(function () {

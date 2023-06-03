@@ -63,4 +63,20 @@ class TaskPolicy
     {
         //
     }
+
+    /**
+     * Determine wheter the user can join the taskforce of a task
+     */
+    public function join(User $user, Task $task): bool
+    {
+        return $user->role <= 5 ? true : false;
+    }
+
+    /**
+     * Determine wheter the user can leave the taskforce of a task
+     */
+    public function leave(User $user, Task $task): bool
+    {
+        return $user->role <= 4 ? true : false;
+    }
 }

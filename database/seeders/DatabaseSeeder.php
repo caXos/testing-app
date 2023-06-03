@@ -19,5 +19,32 @@ class DatabaseSeeder extends Seeder
             'email' => 'jorge@nwta.com',
             'password' => bcrypt('nwta')
         ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Mark Lloyd',
+            'email' => 'mark.lloyd@nwta.com',
+            'password' => bcrypt('nwta'),
+            'role' => 2
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Emily Young',
+            'email' => 'emily.young@nwta.com',
+            'password' => bcrypt('nwta')
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Jorge Intern',
+            'email' => 'jorgeintern@nwta.com',
+            'password' => bcrypt('nwta'),
+            'role' => 5
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Jorge Visitor',
+            'email' => 'jorgevisitor@nwta.com',
+            'password' => bcrypt('nwta'),
+            'role' => 6
+        ]);
     }
 }

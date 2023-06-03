@@ -159,4 +159,37 @@ class TaskController extends Controller
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
+
+    /**
+     * Includes the user in the taskforce of a task
+     */
+    public function join_team(Request $request, Task $task) {
+
+    }
+
+    /**
+     * Removes the user from the taskforce of a task
+     */
+    public function leave_team(Request $request, Task $task) 
+    {
+        $task = Task::find($request->id);
+        $this->authorize('leave', $task);
+        try {
+            $workers = json_decode($task->workers);
+            $index = null;
+            for ($i = 0; $i < sizeof($workers); $i++) {
+                if ($workers[$i]->id == $request->id) {
+                    $index = $i;
+                    break;
+                }
+            }
+            array_splice($workers, $index, 1);
+            $task->workers = json_encode($workers);
+            $task->save();
+            return redirect()->back()->with(['message'=>'Success']);
+        } catch (Exception $e) {
+            $errorMessage = "Contact an admin and inform error code: [TC-08] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
+        }
+    }
 }

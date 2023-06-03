@@ -133,13 +133,13 @@ const showDeleteConfirmationModal = () => {
 }
 
 const addTaskmember = (evt) => {
-    let id = parseInt(evt.target.value)
+    let needle = parseInt(evt.target.value)
     let found = false
     for (let i = 0; i < taskForce.value.length; i++) {
         let haystack = parseInt(taskForce.value[i].id)
-        if (id == haystack) found = true
+        if (needle == haystack) found = true
     }
-    if ( found == false ) taskForce.value.push({id: evt.target.value, name: evt.target.selectedOptions[0].innerText})
+    if ( found == false ) taskForce.value.push({id: needle, name: evt.target.selectedOptions[0].innerText})
 }
 
 const removeTaskMember = (id) => {
