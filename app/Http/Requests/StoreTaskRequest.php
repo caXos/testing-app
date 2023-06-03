@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->user()->role <= 4 ? true : false;
     }
 
     /**
@@ -22,7 +23,13 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'max:50'],
+            'description' => ['present', 'max:500'],
+            'status' => ['required', 'numeric', 'integer'],
+            'deadline' => ['date', 'nullable'],
+            'deadlineTime' => ['nullable'],
+            'priority' => ['required', 'numeric', 'integer'],
+            'workers' => ['present']
         ];
     }
 }

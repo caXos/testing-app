@@ -19,7 +19,8 @@ class DashboardController extends Controller
             $taskCount = count(Task::where('status','<=', 3)->where('active','=',true)->get());
             return Inertia::render('Dashboard', ['taskCount' => $taskCount]);
         } catch (Exception $e) {
-            return Inertia::render('Errors/Error', ['error' => $response_message]);
+            $errorMessage = "Contact an admin and inform error code: [DC-01] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
 }

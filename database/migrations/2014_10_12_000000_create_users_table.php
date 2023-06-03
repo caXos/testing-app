@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->boolean('active')->default(true);
+            $table->integer('role')->default(4);
             $table->timestamps();
         });
     }
@@ -30,3 +32,13 @@ return new class extends Migration
         Schema::dropIfExists('users');
     }
 };
+
+/**
+ * Users roles:
+ * 1 -> SysAdmin
+ * 2 -> DepartmentLeader
+ * 3 -> TeamLeader
+ * 4 -> TeamMember
+ * 5 -> Intern
+ * 6 -> Visitor
+ */
