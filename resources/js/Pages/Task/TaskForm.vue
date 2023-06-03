@@ -11,6 +11,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import FieldSet from '@/Components/Fieldset.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import AccountIcon from '@/Components/AccountIcon.vue';
 
 //Props
 const props = defineProps({
@@ -19,10 +20,8 @@ const props = defineProps({
 })
 
 //Refs
-const tasks = ref(props.tasks)
-const addingTask = ref(false);
 const taskName = ref(null);
-const workers = ref(props.users);
+const taskForce = ref([]);
 
 //Global variables used for jQuery DataTables
 let taskDatatable = null
@@ -45,7 +44,7 @@ const taskForm = useForm({
     status: 1,
     deadline: '',
     priority: 1,
-    workers: ''
+    workers: 0
 
 });
 
@@ -122,6 +121,20 @@ const showDeleteConfirmationModal = () => {
             })
         }
     })
+}
+
+const addTaskmember = (evt) => {
+    let id = parseInt(evt.target.value)
+    let found = false
+    for (let i = 0; i < taskForce.value.length; i++) {
+        let haystack = parseInt(taskForce.value[i].id)
+        if (id == haystack) found = true
+    }
+    if ( found == false ) taskForce.value.push({id: evt.target.value, name: evt.target.selectedOptions[0].innerText})
+}
+
+const removeTaskMember = (id) => {
+    taskForce.value.splice(id, 1)
 }
 </script>
 
@@ -205,18 +218,28 @@ const showDeleteConfirmationModal = () => {
                         </div>
                         <!-- Worker -->
                         <div class="mt-2 grow">
-                            <InputLabel for="worker" value="Worker"/>
+                            <InputLabel for="worker" value="Add Worker"/>
                             <select
                                 id="worker"
                                 v-model="taskForm.workers"
-                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                @change="addTaskmember"
                             >
-                                <option v-for="worker in workers" :value="worker.id">{{ worker.name }}</option>
+                                <option value="0" selected disabled >Select an user to add to this taskforce</option>
+                                <option v-for="worker in props.users" :value="worker.id" >{{ worker.name }}</option>
                             </select>
                             <InputError :message="taskForm.errors.worker" class="mt-2" />
                         </div>
                     </div>
+
+                    <FieldSet :label="'Taskforce'" id="taskForceFieldset">
+                        <div class="flex flex-wrap gap-x-2">
+                            <AccountIcon v-for="(member, index) in taskForce" :key="member.id" :name="member.name" @click="removeTaskMember(index)"/>
+                        </div>
+                    </FieldSet>
                 </FieldSet>
+
+                
 
                 <div class="w-full mt-6 flex justify-center gap-x-2">
                     <PrimaryButton :class="{ 'opacity-25': taskForm.processing }" :disabled="taskForm.processing">

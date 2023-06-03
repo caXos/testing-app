@@ -18,7 +18,7 @@ class TaskController extends Controller
     public function index()
     {
         try {
-            $tasks = Task::where('active','=',true)->where('status','<=',3)->get();
+            $tasks = Task::where('active','=',true)->get();
             if (count($tasks) > 0) {
                 foreach($tasks as $task) {
                     switch($task->status){
@@ -60,7 +60,7 @@ class TaskController extends Controller
         if (auth()->user()->role <= 4) {
             try {
                 $tasks = Task::where('active','=',true)->where('status','<=',3)->get();
-                $users = User::where('active','=',true)->where('role','<=',4)->get();
+                $users = User::where('active','=',true)->where('role','<=',4)->get(['name', 'id']);
                 return Inertia::render('Task/TaskForm', ['tasks'=>$tasks, 'users'=>$users]);
             } catch (Exception $e) {
                 $errorMessage = "Contact an admin and inform error code: [TC-02] \n".$e->getMessage();
@@ -113,7 +113,7 @@ class TaskController extends Controller
         try {
             $task = Task::find($request->id);
             $task->workers = json_decode($task->workers);
-            $users = User::where('active','=',true)->where('role','<=',4)->get();
+            $users = User::where('active','=',true)->where('role','<=',4)->get(['name', 'id']);
             return Inertia::render('Task/TaskForm', ['task'=>$task, 'users'=>$users]);
         } catch (Exception $e) {
             $errorMessage = "Contact an admin and inform error code: [TC-04] \n".$e->getMessage();

@@ -26,8 +26,7 @@ onMounted(() => {
 		responsive: true,
         select: {
             style: 'multi',
-            toggleable: true,
-            selector: 'td:not(:last-child)'
+            toggleable: true
         },        
         columnDefs: [
             {
@@ -144,13 +143,13 @@ const claim_selected = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(task, index) in tasks">
-                        <th>{{ task.id }}</th>
-                        <th>{{ task.name }}</th>
-                        <th><div class="truncate max-w-2xl">{{ task.description }}</div></th>
-                        <th>{{ task.statusString }}</th>
-                        <th>{{ task.deadline }}</th>
-                        <th>
+                    <tr v-for="(task, index) in tasks" >
+                        <th :class="{'bg-green-200': task.status == 4}">{{ task.id }}</th>
+                        <th :class="{'bg-green-200': task.status == 4}">{{ task.name }}</th>
+                        <th :class="{'bg-green-200': task.status == 4}"><div class="truncate max-w-2xl">{{ task.description }}</div></th>
+                        <th :class="{'bg-green-200': task.status == 4}">{{ task.statusString }}</th>
+                        <th :class="{'bg-green-200': task.status == 4}">{{ task.deadline }}</th>
+                        <th :class="{'bg-green-200': task.status == 4}">
                             <div class="flex justify-around content-center">
                                 <Link :href="route('tasks.edit', [task.id])">
                                     <EditIcon title="Edit task"/>
