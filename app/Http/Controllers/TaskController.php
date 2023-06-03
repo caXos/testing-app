@@ -40,8 +40,8 @@ class TaskController extends Controller
                     if ($task->description == null) $task->description = '';
                     if ($task->deadline == null) $task->deadline = 'Not specified';
                     $task->workers = json_decode($task->workers);
-                    if ($task->workers != null) $task->workers = User::find($task->workers)->get(['name']);
-                    else $task->workers = 'None';
+                    // if ($task->workers != null) $task->workers = User::find($task->workers)->get(['name']);
+                    // else $task->workers = 'None';
                 }
             }
             $users = User::where('active','=',true)->where('role','<=',4)->get();

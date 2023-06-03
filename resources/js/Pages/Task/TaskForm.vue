@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { onMounted, ref, nextTick } from 'vue';
+import { onBeforeMount, onMounted, ref, nextTick } from 'vue';
 import { Head, usePage, Link } from '@inertiajs/vue3';
 import MainContainer from '@/Components/MainContainer.vue';
 import InputError from '@/Components/InputError.vue';
@@ -12,6 +12,7 @@ import { useForm } from '@inertiajs/vue3';
 import FieldSet from '@/Components/Fieldset.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import AccountIcon from '@/Components/AccountIcon.vue';
+import XIcon from '@/Components/XIcon.vue';
 
 //Props
 const props = defineProps({
@@ -26,17 +27,6 @@ const taskForce = ref([]);
 //Global variables used for jQuery DataTables
 let taskDatatable = null
 
-//Functions/methods
-onMounted(() => {
-    if (props.task != undefined) {
-        taskForm.name = props.task.name
-        taskForm.description = props.task.description
-        taskForm.status = props.task.status
-        taskForm.deadline = props.task.deadline
-        taskForm.priority = props.task.priority
-        taskForm.workers = props.task.workers
-    }
-})
 
 const taskForm = useForm({
     name: '',
@@ -48,7 +38,26 @@ const taskForm = useForm({
 
 });
 
+//Functions/methods
+onBeforeMount(() => {
+    // props.task.workers
+})
+
+onMounted(() => {
+    if (props.task != undefined) {
+        taskForm.name = props.task.name
+        taskForm.description = props.task.description
+        taskForm.status = props.task.status
+        taskForm.deadline = props.task.deadline
+        taskForm.priority = props.task.priority
+        taskForce.value = props.task.workers
+    }
+})
+
+
 const submit = () => {
+    taskForm.workers = taskForce.value
+    console.log(taskForm.workers, taskForce.value)
     if (props.task == undefined) {
         taskForm.post(route('tasks.store'), {
             preserveState: true,
@@ -136,6 +145,10 @@ const addTaskmember = (evt) => {
 const removeTaskMember = (id) => {
     taskForce.value.splice(id, 1)
 }
+
+const clearTaskForce = () => {
+    taskForce.value = []
+}
 </script>
 
 <template>
@@ -221,7 +234,6 @@ const removeTaskMember = (id) => {
                             <InputLabel for="worker" value="Add Worker"/>
                             <select
                                 id="worker"
-                                v-model="taskForm.workers"
                                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                 @change="addTaskmember"
                             >
@@ -232,9 +244,10 @@ const removeTaskMember = (id) => {
                         </div>
                     </div>
 
-                    <FieldSet :label="'Taskforce'" id="taskForceFieldset">
-                        <div class="flex flex-wrap gap-x-2">
+                    <FieldSet :label="'Taskforce'" id="taskForceFieldset" class="relative" v-if="taskForce.length > 0">
+                        <div class="grid grid-flow-col gap-x-2 justify-center">
                             <AccountIcon v-for="(member, index) in taskForce" :key="member.id" :name="member.name" @click="removeTaskMember(index)"/>
+                            <div class="justify-self-end" title="Remove all" @click="clearTaskForce" v-if="taskForce.length > 0"><XIcon/></div>
                         </div>
                     </FieldSet>
                 </FieldSet>

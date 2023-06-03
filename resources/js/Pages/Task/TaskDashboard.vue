@@ -93,14 +93,14 @@ const more_information = (id) => {
         <div class="flex justify-between">
             <span>Taskforce members:</span>
         `
-    if (props.tasks[id].workers != "None") {
+    if (props.tasks[id].workers != null) {
         for (let i=0; i < props.tasks[id].workers.length; i++ ){
             temp += 
             `<span>${props.tasks[id].workers[i]['name']}</span>`
         }
     } else {
         temp += 
-            `<span>${props.tasks[id].workers}</span>`
+            `<span>Empty</span>`
     }
     temp += `
         </div>
