@@ -27,7 +27,6 @@ class StoreTaskRequest extends FormRequest
             'description' => ['present', 'max:500'],
             'status' => ['required', 'numeric', 'integer'],
             'deadline' => ['date', 'nullable'],
-            'deadlineTime' => ['nullable'],
             'priority' => ['required', 'numeric', 'integer'],
             'workers' => ['present']
         ];

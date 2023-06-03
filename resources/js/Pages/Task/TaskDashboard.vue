@@ -3,28 +3,18 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { onMounted, ref, nextTick } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import MainContainer from '@/Components/MainContainer.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import Modal from '@/Components/Modal.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { useForm } from '@inertiajs/vue3';
 import HandRaisedIcon from '@/Components/HandRaisedIcon.vue';
 import EditIcon from '@/Components/EditIcon.vue';
-import AddIcon from '@/Components/AddIcon.vue';
+import InfoIcon from '@/Components/InfoIcon.vue';
+import FAB from '@/Components/FloatingActionButton.vue';
 
 //Props
 const props = defineProps({
     tasks: Object,
-    users: Object
 })
 
 //Refs
 const tasks = ref(props.tasks)
-const addingTask = ref(false);
-const taskName = ref(null);
-const workers = ref(props.users);
 
 //Global variables used for jQuery DataTables
 let taskDatatable = null
@@ -48,12 +38,16 @@ onMounted(() => {
         buttons: [
             'selectAll',
             'selectNone',
-            // {
-            //     text: 'Marcar selecionados como visualizados',
-            //     action: markSelectedAsSeen,
-            //     name: 'mark_selected_as_seen',
-            //     enabled: false
-            // },
+            'print',
+            'pdf',
+            'colvis',
+            'searchBuilder',
+            {
+                text: 'Claim selected',
+                action: claim_selected,
+                name: 'claim_selected',
+                enabled: false
+            },
             // {
             //     text: 'Apagar selecionados',
             //     action: deactivateSelected,
@@ -62,72 +56,64 @@ onMounted(() => {
             // },
         ],
 	}).on('select', function () {
-        // if (alertsTable.rows({selected: true}).count() > 0) {
-        //     alertsTable.button('mark_selected_as_seen:name').enable()
+        if (alertsTable.rows({selected: true}).count() > 0) {
+            alertsTable.button('claim_selected:name').enable()
         //     alertsTable.button('delete_selected:name').enable()
-        // };
+        };
     }).on('deselect', function () {
-        // if (alertsTable.rows({selected: true}).count() < 1) {
-        //     alertsTable.button('mark_selected_as_seen:name').disable()
+        if (alertsTable.rows({selected: true}).count() < 1) {
+            alertsTable.button('claim_selected:name').disable()
         //     alertsTable.button('delete_selected:name').disable()
-        // };
+        };
     })
 })
 
-const openTaskForm = () => {
-    addingTask.value = true;
-
-    nextTick(() => taskName.value.focus());
-};
-
-const taskForm = useForm({
-    name: '',
-    description: '',
-    status: 1,
-    deadlineDay: '',
-    deadlineTime: '',
-    priority: 1,
-    workers: ''
-
-});
-
-const closeModal = () => {
-    addingTask.value = false;
-
-    taskForm.reset();
-};
-
-const submit = () => {
-    taskForm.post(route('tasks.store'), {
-        preserveState: true,
-        preserveScroll: true,
-        onError: () => {
-            Swal.fire({
-                icon: 'error',
-                text: 'Error! Check messages!'
-            })
-        }, 
-        onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                text: 'Task added successfully!'
-            })
-            tasks.value.push(usePage().props.flash.obj)
-            // taskDatatable.data.reload()
-            // taskDatatable.clear().draw()
-            // taskDatatable.ajax.reload(null,false)
-            // taskDatatable.rows().invalidate().draw();
-            taskDatatable.clear().rows.add(tasks.value)
-        },
-        onFinish: () => {
-            taskForm.reset(),
-            addingTask.value = false
+const more_information = (id) => {
+    let temp = `
+    <div class="flex justify-between">
+        <span>Task name:</span>
+        <span>${props.tasks[id].name}</span>
+    </div>
+    <div class="flex justify-between">
+        <span>Task description:</span>
+        <span>${props.tasks[id].description}</span>
+    </div>
+    <div class="flex justify-between">
+        <span>Status:</span>
+        <span>${props.tasks[id].status} -> ${props.tasks[id].statusString}</span>
+    </div>
+    <div class="flex justify-between">
+        <span>Deadline:</span>
+        <span>${props.tasks[id].deadline.toLocaleString()}</span>
+    </div>
+    <div class="flex justify-between">
+        <span>Priority:</span>
+        <span>${props.tasks[id].priority}</span>
+    </div>
+    <div class="flex justify-between">
+        <span>Taskforce members:</span>
+    `
+    if (props.tasks[id].workers != "None") {
+        for (let i=0; i < props.tasks[id].workers.length; i++ ){
+            temp += 
+            `<span>${props.tasks[id].workers[i]['name']}</span>`
         }
-    });
+    } else {
+        temp += 
+            `<span>${props.tasks[id].workers}</span>`
+    }
+    
+    temp += `</div>`    
+    Swal.fire({
+        html: temp
+    })
 }
 
-const tableRedraw = () => {
-
+const claim_selected = () => {
+    Swal.fire({
+        title: 'Update pending...',
+        text: 'Currently this function is not ready. Wait for next updates!'
+    })
 }
 </script>
 
@@ -152,15 +138,16 @@ const tableRedraw = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="task in tasks">
+                    <tr v-for="(task, index) in tasks">
                         <th>{{ task.id }}</th>
                         <th>{{ task.name }}</th>
                         <th>{{ task.description }}</th>
-                        <th>{{ task.status }}</th>
+                        <th>{{ task.statusString }}</th>
                         <th>{{ task.deadline }}</th>
                         <th>
                             <div class="flex justify-around content-center">
                                 <EditIcon title="Edit task"/>
+                                <InfoIcon title="More information" @click="more_information(index)"/>
                                 <HandRaisedIcon title="Claim task"/>
                             </div>
                         </th>
@@ -171,110 +158,7 @@ const tableRedraw = () => {
         
         <!-- Floating Action Button -->
         <div class="absolute right-5 bottom-5" v-if="usePage().props.auth.user.role <= 4">
-            <div class="w-10 h-10 rounded-full bg-gray-400 cursor-pointer transition-all hover:scale-125 hover:bg-sky-800 flex justify-center items-center"
-                id="addTaskFAB"
-                title="Add task"
-                @click="openTaskForm"
-            >
-                <AddIcon />
-            </div>
-        </div>
-        
-        <!-- Modal -->
-        <Modal :show="addingTask" @close="closeModal">
-            <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900">
-                    Create new task
-                </h2>
-
-                <form @submit.prevent="submit">
-                    <!-- Task Name -->
-                    <div class="mt-6">
-                        <InputLabel for="name" value="Task name*"/>
-                        <TextInput
-                            id="name"
-                            ref="taskName"
-                            v-model="taskForm.name"
-                            class="mt-1 block w-3/4 px-2"
-                            required
-                        />
-                        <InputError :message="taskForm.errors.taskName" class="mt-2" />
-                    </div>
-
-                    <!-- Description -->
-                    <div class="mt-6">
-                        <InputLabel for="description" value="Description"/>
-                        <TextInput
-                            id="description"
-                            v-model="taskForm.description"
-                            class="mt-1 block w-3/4 px-2"
-                        />
-                        <InputError :message="taskForm.errors.description" class="mt-2" />
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mt-6">
-                        <InputLabel for="status" value="Status"/>
-                        <TextInput
-                            id="status"
-                            v-model="taskForm.status"
-
-                            type="number"
-                            min="0"
-                            step=1
-                            value="1"
-                            required
-                        />
-                        <InputError :message="taskForm.errors.status" class="mt-2" />
-                    </div>
-
-                    <!-- Deadline -->
-                    <div class="mt-6">
-                        <InputLabel for="deadline" value="Deadline"/>
-                        <TextInput
-                            id="deadline"
-                            v-model="taskForm.deadline"
-                            class="mt-1 block w-3/4 px-2"
-                            type="date"
-                        />
-                        <InputError :message="taskForm.errors.deadline" class="mt-2" />
-                    </div>
-
-                    <!-- Priority -->
-                    <div class="mt-6">
-                        <InputLabel for="priority" value="Priority"/>
-                        <TextInput
-                            id="priority"
-                            v-model="taskForm.priority"
-                            class="mt-1 block w-3/4 px-2"
-                            type="number"
-                            min="0"
-                            step=1
-                            value="1"
-                            required
-                        />
-                        <InputError :message="taskForm.errors.priority" class="mt-2" />
-                    </div>
-
-                    <!-- Worker -->
-                    <div class="mt-6">
-                        <InputLabel for="worker" value="Worker"/>
-                        <select
-                            id="worker"
-                            v-model="taskForm.workers"
-                            class="mt-1 block w-3/4 px-2"
-                        >
-                            <option v-for="worker in workers" :value="worker.id">{{ worker.name }}</option>
-                        </select>
-                        <InputError :message="taskForm.errors.worker" class="mt-2" />
-                    </div>
-
-                    <div class="w-full mt-6 flex justify-between">
-                        <PrimaryButton :class="{ 'opacity-25': taskForm.processing }" :disabled="taskForm.processing">Add task</PrimaryButton>
-                        <SecondaryButton @click="closeModal" @submit.prevent="submit"  :type="'button'"> Cancel </SecondaryButton>
-                    </div>
-                </form>
-            </div>
-        </Modal>
+            <FAB :model="'task'" :destiny="'tasks.create'" />
+        </div>        
     </AuthenticatedLayout>
 </template>

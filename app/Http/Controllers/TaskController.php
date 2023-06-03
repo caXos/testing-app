@@ -18,6 +18,31 @@ class TaskController extends Controller
     {
         try {
             $tasks = Task::where('active','=',true)->where('status','<=',3)->get();
+            if (count($tasks) > 0) {
+                foreach($tasks as $task) {
+                    switch($task->status){
+                        case 1:
+                            $task->statusString = "Pending";
+                            break;
+                        case 2:
+                            $task->statusString = "In progress";
+                            break;
+                        case 3:
+                            $task->statusString = "Suspended";
+                            break;
+                        case 4:
+                            $task->statusString = "Done";
+                            break;
+                        default:
+                            break;
+                    }
+                    if ($task->description == null) $task->description = '';
+                    if ($task->deadline == null) $task->deadline = 'Not specified';
+                    $task->workers = json_decode($task->workers);
+                    if ($task->workers != null) $task->workers = User::find($task->workers)->get(['name']);
+                    else $task->workers = 'None';
+                }
+            }
             $users = User::where('active','=',true)->where('role','<=',4)->get();
             return Inertia::render('Task/TaskDashboard', ['tasks'=>$tasks, 'users'=>$users]);
         } catch (Exception $e) {
@@ -27,21 +52,15 @@ class TaskController extends Controller
     }
 
     /**
-     * Sends refreshed data to the DataTable
-     */
-    public function refreshedData() {
-        
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         if (auth()->user()->role <= 4) {
             try {
-                $users = User::where('active','=',true)->where('role','<=',3)->get();
-                return redirect()->back();
+                $tasks = Task::where('active','=',true)->where('status','<=',3)->get();
+                $users = User::where('active','=',true)->where('role','<=',4)->get();
+                return Inertia::render('Task/TaskForm', ['tasks'=>$tasks, 'users'=>$users]);
             } catch (Exception $e) {
                 $errorMessage = "Contact an admin and inform error code: [TC-02] \n".$e->getMessage();
                 return Inertia::render('Errors/Error', ['error' => $errorMessage]);
@@ -65,13 +84,12 @@ class TaskController extends Controller
                 'description' => $request->description,
                 'status' => $request->status,
                 'deadline' => $request->deadline,
-                'deadlineTime' => "23:59:59",
                 'priority' => $request->priority,
                 'workers' => json_encode($request->workers),
                 'active' => true
             ]);
             $newTask->save();
-            return redirect()->back()->with('obj',$newTask);
+            return redirect()->route('tasks');
         } catch (Exception $e) {
             $errorMessage = "Contact an admin and inform error code: [TC-03] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);

@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name')->default('New task');
             $table->text('description')->nullable()->default(null);
             $table->integer('status')->default(1);
-            $table->date('deadline')->nullable()->default(null);
-            $table->time('deadlineTime')->nullable()->default(null);
+            $table->dateTime('deadline')->nullable()->default(null);
             $table->integer('priority')->default(1);
             $table->json('workers')->nullable()->default(null);
             $table->boolean('active')->default(true);
