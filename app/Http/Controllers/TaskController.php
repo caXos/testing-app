@@ -129,7 +129,6 @@ class TaskController extends Controller
         $task = Task::find($request->id);
         $this->authorize('update', $task);
         try {
-            $task = Task::find($request->id);
             $task->name = $request->name;
             $task->description = $request->description;
             $task->status = $request->status;
@@ -148,8 +147,16 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy(Request $request, Task $task)
     {
-        //
+        $task = Task::find($request->id);
+        $this->authorize('delete', $task);
+        try {
+            $task->delete();
+            return redirect()->route('tasks');
+        } catch (Exception $e) {
+            $errorMessage = "Contact an admin and inform error code: [TC-06] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
+        }
     }
 }

@@ -10,6 +10,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import FieldSet from '@/Components/Fieldset.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 
 //Props
 const props = defineProps({
@@ -92,6 +93,36 @@ const submit = () => {
     }
 }
 
+const showDeleteConfirmationModal = () => {
+    Swal.fire({
+        title: 'Confirm delete?',
+        icon: 'question',
+        text: 'Are you sure you want to delete this task? This cannot be undone.',
+        showCancelButton: true,
+        confirmButtonColor: '#B91C1C',
+        confirmButtonText: 'Yes, delete it'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            taskForm.delete(route('tasks.destroy',[props.task.id]),{
+                preserveScroll: true,
+                preserveState: true,
+                onError: () => {
+                Swal.fire({
+                        icon: 'error',
+                        text: 'Error! Check messages!'
+                    })
+                }, 
+                onSuccess: () => {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Task deleted successfully!'
+                    })
+                },
+                onFinish: () => taskForm.reset()
+            })
+        }
+    })
+}
 </script>
 
 <template>
@@ -196,6 +227,9 @@ const submit = () => {
                             Cancel
                         </SecondaryButton>
                     </Link>
+                    <DangerButton @submit.prevent="submit"  :type="'button'" v-if="props.task != undefined" @click="showDeleteConfirmationModal">
+                        Delete
+                    </DangerButton>
                 </div>
             </form>
         </MainContainer>
