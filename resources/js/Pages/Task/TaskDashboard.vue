@@ -6,6 +6,7 @@ import MainContainer from '@/Components/MainContainer.vue';
 import HandRaisedIcon from '@/Components/HandRaisedIcon.vue';
 import EditIcon from '@/Components/EditIcon.vue';
 import InfoIcon from '@/Components/InfoIcon.vue';
+import LeaveTeamIcon from '@/Components/LeaveTeamIcon.vue';
 import FAB from '@/Components/FloatingActionButton.vue';
 
 //Props
@@ -60,14 +61,14 @@ onMounted(() => {
             // },
         ],
 	}).on('select', function () {
-        if (alertsTable.rows({selected: true}).count() > 0) {
-            alertsTable.button('claim_selected:name').enable()
-        //     alertsTable.button('delete_selected:name').enable()
+        if (taskDatatable.rows({selected: true}).count() > 0) {
+            taskDatatable.button('claim_selected:name').enable()
+        //     taskDatatable.button('delete_selected:name').enable()
         };
     }).on('deselect', function () {
-        if (alertsTable.rows({selected: true}).count() < 1) {
-            alertsTable.button('claim_selected:name').disable()
-        //     alertsTable.button('delete_selected:name').disable()
+        if (taskDatatable.rows({selected: true}).count() < 1) {
+            taskDatatable.button('claim_selected:name').disable()
+        //     taskDatatable.button('delete_selected:name').disable()
         };
     })
 })
