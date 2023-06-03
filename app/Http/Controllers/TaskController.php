@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 
@@ -107,9 +108,17 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Task $task)
+    public function edit(Request $request, Task $task)
     {
-        //
+        try {
+            $task = Task::find($request->id);
+            $task->workers = json_decode($task->workers);
+            $users = User::where('active','=',true)->where('role','<=',4)->get();
+            return Inertia::render('Task/TaskForm', ['task'=>$task, 'users'=>$users]);
+        } catch (Exception $e) {
+            $errorMessage = "Contact an admin and inform error code: [TC-04] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
+        }
     }
 
     /**
@@ -117,7 +126,23 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $task = Task::find($request->id);
+        $this->authorize('update', $task);
+        try {
+            $task = Task::find($request->id);
+            $task->name = $request->name;
+            $task->description = $request->description;
+            $task->status = $request->status;
+            $task->deadline = $request->deadline;
+            $task->priority = $request->priority;
+            $task->workers = json_encode($request->workers);
+            $task->active = true;
+            $task->save();
+            return redirect()->route('tasks');
+        } catch (Exception $e) {
+            $errorMessage = "Contact an admin and inform error code: [TC-05] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
+        }
     }
 
     /**

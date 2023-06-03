@@ -11,7 +11,7 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->user()->role <= 4 ? true : false;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'max:50'],
+            'description' => ['present', 'max:500'],
+            'status' => ['required', 'numeric', 'integer'],
+            'deadline' => ['date', 'nullable'],
+            'priority' => ['required', 'numeric', 'integer'],
+            'workers' => ['present']
         ];
     }
 }

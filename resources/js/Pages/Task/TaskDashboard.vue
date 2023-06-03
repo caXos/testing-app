@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { onMounted, ref, nextTick } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, Link } from '@inertiajs/vue3';
 import MainContainer from '@/Components/MainContainer.vue';
 import HandRaisedIcon from '@/Components/HandRaisedIcon.vue';
 import EditIcon from '@/Components/EditIcon.vue';
@@ -33,6 +33,10 @@ onMounted(() => {
                 'targets': [5],
                 'sortable': false
             },
+            {
+                'targets': [2],
+                'width': '15%'
+            }
         ],
         dom: 'Blfrtip',
         buttons: [
@@ -70,29 +74,25 @@ onMounted(() => {
 
 const more_information = (id) => {
     let temp = `
-    <div class="flex justify-between">
-        <span>Task name:</span>
-        <span>${props.tasks[id].name}</span>
-    </div>
-    <div class="flex justify-between">
-        <span>Task description:</span>
-        <span>${props.tasks[id].description}</span>
-    </div>
-    <div class="flex justify-between">
-        <span>Status:</span>
-        <span>${props.tasks[id].status} -> ${props.tasks[id].statusString}</span>
-    </div>
-    <div class="flex justify-between">
-        <span>Deadline:</span>
-        <span>${props.tasks[id].deadline.toLocaleString()}</span>
-    </div>
-    <div class="flex justify-between">
-        <span>Priority:</span>
-        <span>${props.tasks[id].priority}</span>
-    </div>
-    <div class="flex justify-between">
-        <span>Taskforce members:</span>
-    `
+        <div class="flex justify-between">
+            <span>Task description:</span>
+            <span>${props.tasks[id].description}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Status:</span>
+            <span>${props.tasks[id].status} -> ${props.tasks[id].statusString}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Deadline:</span>
+            <span>${props.tasks[id].deadline.toLocaleString()}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Priority:</span>
+            <span>${props.tasks[id].priority}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>Taskforce members:</span>
+        `
     if (props.tasks[id].workers != "None") {
         for (let i=0; i < props.tasks[id].workers.length; i++ ){
             temp += 
@@ -102,9 +102,14 @@ const more_information = (id) => {
         temp += 
             `<span>${props.tasks[id].workers}</span>`
     }
-    
-    temp += `</div>`    
+    temp += `
+        </div>
+        <div class="flex justify-between">
+            <span>Last update:</span>
+            <span>${new Date(props.tasks[id].updated_at).toLocaleString()}</span>
+        </div>`
     Swal.fire({
+        title: props.tasks[id].name,
         html: temp
     })
 }
@@ -141,12 +146,14 @@ const claim_selected = () => {
                     <tr v-for="(task, index) in tasks">
                         <th>{{ task.id }}</th>
                         <th>{{ task.name }}</th>
-                        <th>{{ task.description }}</th>
+                        <th><div class="truncate max-w-2xl">{{ task.description }}</div></th>
                         <th>{{ task.statusString }}</th>
                         <th>{{ task.deadline }}</th>
                         <th>
                             <div class="flex justify-around content-center">
-                                <EditIcon title="Edit task"/>
+                                <Link :href="route('tasks.edit', [task.id])">
+                                    <EditIcon title="Edit task"/>
+                                </Link>
                                 <InfoIcon title="More information" @click="more_information(index)"/>
                                 <HandRaisedIcon title="Claim task"/>
                             </div>

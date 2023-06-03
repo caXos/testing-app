@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { onMounted, ref, nextTick } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, Link } from '@inertiajs/vue3';
 import MainContainer from '@/Components/MainContainer.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -28,7 +28,14 @@ let taskDatatable = null
 
 //Functions/methods
 onMounted(() => {
-    
+    if (props.task != undefined) {
+        taskForm.name = props.task.name
+        taskForm.description = props.task.description
+        taskForm.status = props.task.status
+        taskForm.deadline = props.task.deadline
+        taskForm.priority = props.task.priority
+        taskForm.workers = props.task.workers
+    }
 })
 
 const taskForm = useForm({
@@ -42,25 +49,47 @@ const taskForm = useForm({
 });
 
 const submit = () => {
-    taskForm.post(route('tasks.store'), {
-        preserveState: true,
-        preserveScroll: true,
-        onError: () => {
-            Swal.fire({
-                icon: 'error',
-                text: 'Error! Check messages!'
-            })
-        }, 
-        onSuccess: () => {
-            Swal.fire({
-                icon: 'success',
-                text: 'Task added successfully!'
-            })
-        },
-        onFinish: () => {
-            taskForm.reset()
-        }
-    });
+    if (props.task == undefined) {
+        taskForm.post(route('tasks.store'), {
+            preserveState: true,
+            preserveScroll: true,
+            onError: () => {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Error! Check messages!'
+                })
+            }, 
+            onSuccess: () => {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Task added successfully!'
+                })
+            },
+            onFinish: () => {
+                taskForm.reset()
+            }
+        })
+    } else {
+        taskForm.post(route('tasks.update', props.task.id), {
+            preserveState: true,
+            preserveScroll: true,
+            onError: () => {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Error! Check messages!'
+                })
+            }, 
+            onSuccess: () => {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Task updated successfully!'
+                })
+            },
+            onFinish: () => {
+                taskForm.reset()
+            }
+        })
+    }
 }
 
 </script>
@@ -112,7 +141,6 @@ const submit = () => {
                                 type="number"
                                 min="0"
                                 step=1
-                                value="1"
                                 required
                             />
                             <InputError :message="taskForm.errors.priority" class="mt-2" />
@@ -160,8 +188,14 @@ const submit = () => {
                 </FieldSet>
 
                 <div class="w-full mt-6 flex justify-center gap-x-2">
-                    <PrimaryButton :class="{ 'opacity-25': taskForm.processing }" :disabled="taskForm.processing">Add task</PrimaryButton>
-                    <SecondaryButton @submit.prevent="submit"  :type="'button'"> Cancel </SecondaryButton>
+                    <PrimaryButton :class="{ 'opacity-25': taskForm.processing }" :disabled="taskForm.processing">
+                        <span v-if="props.task == undefined">Add</span><span v-else>Update </span>
+                    </PrimaryButton>
+                    <Link :href="route('tasks')">
+                        <SecondaryButton @submit.prevent="submit"  :type="'button'">
+                            Cancel
+                        </SecondaryButton>
+                    </Link>
                 </div>
             </form>
         </MainContainer>
