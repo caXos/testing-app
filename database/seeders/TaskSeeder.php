@@ -131,13 +131,3 @@ class TaskSeeder extends Seeder
         ]);
     }
 }
-
-// \App\Models\Task::factory()->create([
-        //     'name' => 'Second Interview with Jorge',
-        //     'description' => 'Meet with Jorge via Teams. Explain the company, the role, and the test. UPDATE: meeting went quite well. Talk to Emily to see which are the next steps.',
-        //     'status' => 4,
-        //     'deadline' => '2023-05-19 13:30:00',
-        //     'workers' => json_encode($workers),
-        //     'priority' => 5,
-        //     'updated_at' => '2023-05-19 14:15:00'
-        // ]);

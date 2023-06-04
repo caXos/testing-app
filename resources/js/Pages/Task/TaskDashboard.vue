@@ -79,8 +79,8 @@ onMounted(() => {
 
 const more_information = (id) => {
     let temp = `
-        <div class="flex justify-between">
-            <span>Task description:</span>
+        <div class="flex flex-col">
+            <span>Description:</span>
             <span>${props.tasks[id].description}</span>
         </div>
         <div class="flex justify-between">
@@ -96,23 +96,26 @@ const more_information = (id) => {
             <span>${props.tasks[id].priority}</span>
         </div>
         <div class="flex justify-between">
+            <span>Last update:</span>
+            <span>${new Date(props.tasks[id].updated_at).toLocaleString()}</span>
+        </div>`
+    temp += 
+        `<div class="flex justify-center">
             <span>Taskforce members:</span>
-        `
+        </div>
+        <div class="flex flex-wrap justify-center gap-x-2">`
     if (props.tasks[id].workers != null) {
         for (let i=0; i < props.tasks[id].workers.length; i++ ){
             temp += 
-            `<span>${props.tasks[id].workers[i]['name']}</span>`
+            `<div class="rounded-md p-2 bg-gray-200">
+                <span>${props.tasks[id].workers[i]['name']}</span>
+            </div>`
         }
     } else {
         temp += 
             `<span>Empty</span>`
     }
-    temp += `
-        </div>
-        <div class="flex justify-between">
-            <span>Last update:</span>
-            <span>${new Date(props.tasks[id].updated_at).toLocaleString()}</span>
-        </div>`
+    temp += `</div>`
     Swal.fire({
         title: props.tasks[id].name,
         html: temp
