@@ -23,6 +23,15 @@ The goal of this project is to create a "Task Manager" web application with Vue.
 
 To use this project you can clone this repo and start the application setup, make sure you have `PHP/composer` and `Docker` installed:
 -  Save the file `.env.example` as `.env`
+-- Update `.env` as needed, for example for DB connection. Suggestion:
+--- (...)
+--- DB_CONNECTION=pgsql
+--- DB_HOST=127.0.0.1
+--- DB_PORT=5432
+--- DB_DATABASE=DEV_nwta
+--- DB_USERNAME=newswiretestinguser
+--- DB_PASSWORD=newswiretestingpswd
+--- (...)
 -  Run `composer install` To install dependencies
 -  Bring the laravel sail containers up with `./vendor/bin/sail up -d`
 -  Run `./vendor/bin/sail npm install` To use the npm from the default docker provided by Laravel Sail 
