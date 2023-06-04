@@ -46,5 +46,9 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('nwta'),
             'role' => 6
         ]);
+
+        $this->call([
+            TaskSeeder::class
+        ]);
     }
 }
