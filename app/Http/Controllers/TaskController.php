@@ -47,7 +47,7 @@ class TaskController extends Controller
             $users = User::where('active','=',true)->where('role','<=',4)->get();
             return Inertia::render('Task/TaskDashboard', ['tasks'=>$tasks, 'users'=>$users]);
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-01] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-01] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
@@ -63,7 +63,7 @@ class TaskController extends Controller
                 $users = User::where('active','=',true)->where('role','<=',4)->get(['name', 'id']);
                 return Inertia::render('Task/TaskForm', ['tasks'=>$tasks, 'users'=>$users]);
             } catch (Exception $e) {
-                $errorMessage = "Contact an admin and inform error code: [TC-02] \n".$e->getMessage();
+                $errorMessage = "Please contact an admin and inform error code: [TC-02] \n".$e->getMessage();
                 return Inertia::render('Errors/Error', ['error' => $errorMessage]);
             }
         } else {
@@ -92,7 +92,7 @@ class TaskController extends Controller
             $newTask->save();
             return redirect()->route('tasks');
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-03] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-03] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
@@ -116,7 +116,7 @@ class TaskController extends Controller
             $users = User::where('active','=',true)->where('role','<=',4)->get(['name', 'id']);
             return Inertia::render('Task/TaskForm', ['task'=>$task, 'users'=>$users]);
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-04] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-04] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
@@ -139,7 +139,7 @@ class TaskController extends Controller
             $task->save();
             return redirect()->route('tasks');
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-05] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-05] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
@@ -155,7 +155,7 @@ class TaskController extends Controller
             $task->delete();
             return redirect()->route('tasks');
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-06] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-06] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
@@ -178,7 +178,7 @@ class TaskController extends Controller
             $task->save();
             return redirect()->back()->with(['message'=>'Success']);
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-07] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-07] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }
@@ -204,7 +204,25 @@ class TaskController extends Controller
             $task->save();
             return redirect()->back()->with(['message'=>'Success']);
         } catch (Exception $e) {
-            $errorMessage = "Contact an admin and inform error code: [TC-08] \n".$e->getMessage();
+            $errorMessage = "Please contact an admin and inform error code: [TC-08] \n".$e->getMessage();
+            return Inertia::render('Errors/Error', ['error' => $errorMessage]);
+        }
+    }
+
+    /**
+     * Mark the task as completed
+     * A.k.a.: Update Task's status to 4 (done/completed)
+     */
+    public function complete(Request $request, Task $task) 
+    {
+        $task = Task::find($request->id);
+        $this->authorize('complete', $task);
+        try {
+            $task->status = 4;
+            $task->save();
+            return redirect()->back()->with(['message'=>'Success']);
+        } catch (Exception $e) {
+            $errorMessage = "Please contact an admin and inform error code: [TC-09] \n".$e->getMessage();
             return Inertia::render('Errors/Error', ['error' => $errorMessage]);
         }
     }

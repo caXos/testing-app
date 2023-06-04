@@ -9,6 +9,7 @@ import InfoIcon from '@/Components/InfoIcon.vue';
 import LeaveTeamIcon from '@/Components/LeaveTeamIcon.vue';
 import FAB from '@/Components/FloatingActionButton.vue';
 import { useForm } from '@inertiajs/vue3';
+import CheckIcon from '@/Components/CheckIcon.vue';
 
 //Props
 const props = defineProps({
@@ -139,16 +140,25 @@ function isInTeam(index) {
 
 const joinTeam = (id) => {
     let taskIndex = tasks.value.find( (checkId) => {return parseInt(checkId.id) == id} )
-    taskDform.post(route('tasks.join.team', [taskIndex.id]), {
-        preserveScroll: true,
-        onSuccess: (res) => {
-            console.log(res)
-            tasks.value[taskIndex.id-1].workers.push({
-                id: usePage().props.auth.user.id,
-                name: usePage().props.auth.user.name
+    Swal.fire({
+        title: 'Join team',
+        text: 'Are you sure you want to join this task\'s taskforce? It will also change its status to "In progress"',
+        showCancelButton: true,
+        confirmButtonText: 'Join',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            taskDform.post(route('tasks.join.team', [taskIndex.id]), {
+                preserveScroll: true,
+                onSuccess: (res) => {
+                    console.log(res)
+                    tasks.value[taskIndex.id-1].workers.push({
+                        id: usePage().props.auth.user.id,
+                        name: usePage().props.auth.user.name
+                    })
+                    tasks.value[taskIndex.id-1].statusString = "In progress"
+                    tasks.value[taskIndex.id-1].status = 2
+                }
             })
-            tasks.value[taskIndex.id-1].statusString = "In progress"
-            tasks.value[taskIndex.id-1].status = 2
         }
     })
 }
@@ -156,11 +166,43 @@ const joinTeam = (id) => {
 const leaveTeam = (id) => {
     let taskIndex = tasks.value.find( (checkId) => {return parseInt(checkId.id) == id} )
     let workerIndex = tasks.value[taskIndex.id-1].workers.findIndex( (checkId) => {return parseInt(checkId.id) == usePage().props.auth.user.id} )
-    taskDform.post(route('tasks.leave.team', [taskIndex.id]), {
-        preserveScroll: true,
-        onSuccess: (res) => {
-            console.log(res)
-            tasks.value[taskIndex.id-1].workers.splice(workerIndex,1) //taskIndex needs to be reduced by one because v-for uses 1 to length, instead of 0 to (length-1); workerIndex does not needs to be reduced
+    Swal.fire({
+        title: 'Leave team',
+        text: 'Are you sure you want to leav this task\'s taskforce? It will not change its status.',
+        showCancelButton: true,
+        confirmButtonText: 'Leave',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            taskDform.post(route('tasks.leave.team', [taskIndex.id]), {
+                preserveScroll: true,
+                onSuccess: (res) => {
+                    console.log(res)
+                    tasks.value[taskIndex.id-1].workers.splice(workerIndex,1) //taskIndex needs to be reduced by one because v-for uses 1 to length, instead of 0 to (length-1); workerIndex does not needs to be reduced
+                }
+            })
+        }
+    })
+}
+
+const completeTask = (id) => {
+    let taskIndex = tasks.value.find( (checkId) => {return parseInt(checkId.id) == id} )
+
+    Swal.fire({
+        title: 'Mark as completed',
+        text: ' Are you sure you want to mark this task as completed?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        confirmButtonColor: '#B4EEC9',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            taskDform.post(route('tasks.complete', [taskIndex.id]), {
+                preserveScroll: true,
+                onSuccess: (res) => {
+                    tasks.value[taskIndex.id-1].status = 4
+                    tasks.value[taskIndex.id-1].statusString = "Done"
+                }
+            })
+
         }
     })
 }
@@ -201,6 +243,7 @@ const leaveTeam = (id) => {
                                 <InfoIcon title="More information" @click="more_information(index)"/>
                                 <HandRaisedIcon title="Join taskforce" v-if="!(isInTeam(index))" @click="joinTeam(task.id)"/>
                                 <LeaveTeamIcon title="Leave team" v-else @click="leaveTeam(task.id)"/>
+                                <CheckIcon v-if="task.status != 4" title="Mark as completed" @click="completeTask(task.id)" />
                             </div>
                         </th>
                     </tr>

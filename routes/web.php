@@ -58,6 +58,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::post('tasks/join/{id}', [TaskController::class, 'join_team'])->name('tasks.join.team');
     //Leave Team 
     Route::post('tasks/leave/{id}', [TaskController::class, 'leave_team'])->name('tasks.leave.team');
+    //Complete Task
+    Route::post('tasks/edit/complete/{id}', [TaskController::class, 'complete'])->name('tasks.complete');
 }); 
 
 Route::middleware('auth')->group(function () {

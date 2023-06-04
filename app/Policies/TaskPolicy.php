@@ -79,4 +79,12 @@ class TaskPolicy
     {
         return $user->role <= 4 ? true : false;
     }
+
+    /**
+     * Determine wheter the user can mark the task as completed
+     */
+    public function complete(User $user, Task $task): bool
+    {
+        return $user->role <= 4 ? true : false;
+    }
 }

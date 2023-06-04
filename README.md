@@ -1,15 +1,14 @@
-
-## Front-end Developer Testing Project
+## Jorge's Front-end Developer Testing Project
 
 The goal of this project is to create a "Task Manager" web application with Vue.js and Laravel as the backend API.
 
-### Requirements
+### Features
 
-- User should be able to view a list of tasks in a table (display task name, description, and status).
-- User should be able to click on a task to view more information about it (additional info such as task deadline, priority, etc.) on a modal in the same page.
-- User should be able to "take on" a task by clicking an action button in the table row. This should update the task's status to "In Progress".
-- User should be able to update a task's information and status ("In Progress", "Completed", etc.).
-- User should be able to mark a task as "Complete" with an action button on the task view.
+- User can view a list of tasks in a table (display task name, description, and status).
+- User can click on a task to view more information about it (additional info such as task deadline, priority, etc.) on a modal in the same page.
+- User can "take on" a task by clicking an action button in the table row. This updates the task's status to "In Progress".
+- User can update a task's information and status ("In Progress", "Completed", etc.).
+- User can mark a task as "Complete" with an action button on the task view.
 
 ### Specifics
 
@@ -34,14 +33,6 @@ To use this project you can clone this repo and start the application setup, mak
 -  Go to http://localhost:8080 and register an account, on the dashboard page you can work on the task
 
 ![Preview](./preview.jpg?raw=true "Dashboard Preview")
-
-### What We're Looking For
-
-- Code quality: Your code should be well-organized and readable, with comments where necessary.
-- Understanding of Vue.js: You should use Vue.js features effectively, including components, directives, and props.
-- Understanding of asynchronous JavaScript: You should use async/await, promises, or callbacks appropriately to handle asynchronous operations, like requests to the Laravel API.
-- Error handling: Your application should handle potential errors gracefully.
-- User experience: The application should be easy to use and navigate.
 
 ### Submission
 
